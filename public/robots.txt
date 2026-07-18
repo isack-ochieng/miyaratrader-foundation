@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /trading
+Disallow: /profile
+Disallow: /notifications
+Disallow: /settings
+Disallow: /connect-deriv
+Disallow: /deriv-callback
+Disallow: /reset-password
