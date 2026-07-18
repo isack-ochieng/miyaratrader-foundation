@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: DashboardPage,
 });
 
-interface DerivConn { account_id: string; currency: string; balance: number; status: string; is_virtual: boolean }
+interface DerivConn { account_id: string; currency: string | null; balance: number | null; status: string; is_virtual: boolean | null }
 interface Profile { full_name: string | null; email: string | null }
 
 function DashboardPage() {
