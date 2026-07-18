@@ -14,7 +14,150 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      deriv_connections: {
+        Row: {
+          account_id: string
+          balance: number | null
+          created_at: string
+          currency: string | null
+          id: string
+          is_virtual: boolean | null
+          last_synced_at: string | null
+          status: string
+          token_encrypted: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_id: string
+          balance?: number | null
+          created_at?: string
+          currency?: string | null
+          id?: string
+          is_virtual?: boolean | null
+          last_synced_at?: string | null
+          status?: string
+          token_encrypted?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_id?: string
+          balance?: number | null
+          created_at?: string
+          currency?: string | null
+          id?: string
+          is_virtual?: boolean | null
+          last_synced_at?: string | null
+          status?: string
+          token_encrypted?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          read?: boolean
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          country: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          timezone: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          timezone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          timezone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_settings: {
+        Row: {
+          created_at: string
+          email_notifications: boolean
+          language: string
+          marketing_emails: boolean
+          push_notifications: boolean
+          theme: string
+          two_factor_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_notifications?: boolean
+          language?: string
+          marketing_emails?: boolean
+          push_notifications?: boolean
+          theme?: string
+          two_factor_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_notifications?: boolean
+          language?: string
+          marketing_emails?: boolean
+          push_notifications?: boolean
+          theme?: string
+          two_factor_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
