@@ -21,7 +21,7 @@ function DashboardPage() {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) return;
       const [{ data: connData }, { data: profData }] = await Promise.all([
-        supabase.from("deriv_connections").select("account_id,currency,balance,status,is_virtual").eq("user_id", user.user.id).maybeSingle(),
+        supabase.from("deriv_connections").select("account_id,currency,balance,status,is_virtual").eq("user_id", user.user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
         supabase.from("profiles").select("full_name,email").eq("id", user.user.id).maybeSingle(),
       ]);
       setConn(connData);
@@ -33,15 +33,15 @@ function DashboardPage() {
 
   return (
     <PageContainer>
-      <PageHeader eyebrow="Dashboard" title={`Welcome back, ${name}.`} subtitle="Your trading workspace at a glance." />
+      <PageHeader eyebrow="Dashboard" title={`Welcome back, ${name}.`}  />
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="md:col-span-2 relative overflow-hidden">
           <div className="absolute inset-0 -z-10 opacity-40" style={{ background: "var(--gradient-hero)" }} />
-          <div className="text-xs uppercase tracking-widest text-primary">Quick start</div>
-          <h2 className="mt-2 text-2xl font-display font-semibold">Connect your Deriv account to begin.</h2>
+          <div className="text-xs uppercase tracking-widest text-primary">Account access</div>
+          <h2 className="mt-2 text-2xl font-display font-semibold">{conn ? "Deriv account" : "No Deriv account linked"}</h2>
           <p className="text-sm text-muted-foreground mt-2 max-w-lg">
-            Link your Deriv account via secure OAuth to see live balances, positions, and analytics inside MiyaraTrader.
+            Account details reflect the last saved connection. Live trading is not available.
           </p>
           <div className="mt-6 flex gap-3">
             {conn ? (
@@ -57,14 +57,14 @@ function DashboardPage() {
           <div className="text-xs uppercase tracking-widest text-muted-foreground">Connection status</div>
           <div className="mt-3 flex items-center gap-3">
             <span className={`h-2.5 w-2.5 rounded-full ${conn ? "bg-primary shadow-[0_0_0_4px_oklch(0.72_0.16_160/0.2)]" : "bg-muted-foreground/60"}`} />
-            <div className="font-medium">{conn ? "Connected" : "Not connected"}</div>
+            <div className="font-medium">{conn ? "Account linked" : "Not connected"}</div>
           </div>
           {conn && (
             <div className="mt-4 text-sm space-y-1">
               <Row k="Account" v={conn.account_id} />
               <Row k="Currency" v={conn.currency} />
               <Row k="Type" v={conn.is_virtual ? "Demo" : "Real"} />
-              <Row k="Balance" v={`${conn.balance?.toFixed?.(2) ?? "0.00"} ${conn.currency}`} />
+              <Row k="Balance" v={`${conn.balance?.toFixed?.(2) ?? "—"} ${conn.currency}`} />
             </div>
           )}
         </Card>
@@ -73,25 +73,25 @@ function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-3 mt-4">
         <Card>
           <div className="flex items-center gap-2 text-sm text-muted-foreground"><TrendingUp className="h-4 w-4 text-primary"/> Trading summary</div>
-          <div className="mt-3 text-3xl font-semibold">{conn ? `${conn.balance?.toFixed?.(2) ?? "0.00"}` : "—"}<span className="text-sm text-muted-foreground ml-1">{conn?.currency ?? ""}</span></div>
-          <div className="text-xs text-muted-foreground mt-1">Total account equity</div>
+          <div className="mt-3 text-3xl font-semibold">{conn ? `${conn.balance?.toFixed?.(2) ?? "—"}` : "—"}<span className="text-sm text-muted-foreground ml-1">{conn?.currency ?? ""}</span></div>
+          <div className="text-xs text-muted-foreground mt-1">Last recorded balance</div>
         </Card>
         <Card>
           <div className="flex items-center gap-2 text-sm text-muted-foreground"><Clock className="h-4 w-4 text-primary"/> Recent activity</div>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-primary shrink-0"/> Account created</li>
             {conn && <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-primary shrink-0"/> Deriv account connected</li>}
-            <li className="flex gap-2 opacity-60"><Clock className="h-4 w-4 shrink-0"/> More activity in Phase 2</li>
+            <li className="flex gap-2 opacity-60"><Clock className="h-4 w-4 shrink-0"/> No further activity recorded</li>
           </ul>
         </Card>
         <Card>
           <div className="flex items-center gap-2 text-sm text-muted-foreground"><Bell className="h-4 w-4 text-primary"/> Announcements</div>
-          <div className="mt-3 text-sm">Welcome to MiyaraTrader Phase 1.</div>
-          <div className="mt-1 text-xs text-muted-foreground">More features launching soon. Stay tuned.</div>
+          <div className="mt-3 text-sm">Trading execution is not available.</div>
+          <div className="mt-1 text-xs text-muted-foreground">This release supports account management and connection records.</div>
         </Card>
       </div>
 
-      <PageHeader className="mt-12" eyebrow="Quick actions" title="Jump straight in." />
+      <PageHeader className="mt-12" eyebrow="Quick actions" title="Workspace" />
       <div className="grid gap-4 md:grid-cols-4">
         <QuickAction to="/trading" icon={LineChart} label="Open trading" />
         <QuickAction to="/connect-deriv" icon={Link2} label="Manage connection" />
@@ -99,7 +99,7 @@ function DashboardPage() {
         <QuickAction to="/settings" icon={Bell} label="Preferences" />
       </div>
 
-      <PageHeader className="mt-12" eyebrow="Coming soon" title="Future features." subtitle="Placeholders for what's next in the roadmap." />
+      <PageHeader className="mt-12" eyebrow="Coming soon" title="Planned modules" />
       <div className="grid gap-4 md:grid-cols-3">
         {future.map(f => (
           <Card key={f.title} className="opacity-90">
@@ -108,7 +108,7 @@ function DashboardPage() {
               <span className="text-[10px] font-semibold uppercase tracking-widest rounded-full bg-muted px-2 py-1 text-muted-foreground">Coming soon</span>
             </div>
             <div className="mt-3 font-semibold">{f.title}</div>
-            <div className="text-xs text-muted-foreground mt-1">{f.body}</div>
+            
           </Card>
         ))}
       </div>
