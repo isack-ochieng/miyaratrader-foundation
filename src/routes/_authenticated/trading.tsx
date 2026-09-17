@@ -3,6 +3,15 @@ import { PageContainer, PageHeader, ComingSoon, Card } from "@/components/app/Ap
 import { LineChart, Activity, Wallet2, History, Signal, Bot, Wrench, TrendingUp } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/trading")({
+  head: () => ({ meta: [
+    { title: "Trading workspace — MiyaraTrader" },
+    { name: "description", content: "MiyaraTrader trading workspace. Trading execution is not available." },
+    { property: "og:title", content: "Trading workspace — MiyaraTrader" },
+    { property: "og:description", content: "MiyaraTrader trading workspace. Trading execution is not available." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+    { name: "robots", content: "noindex" },
+  ] }),
   component: TradingPage,
 });
 

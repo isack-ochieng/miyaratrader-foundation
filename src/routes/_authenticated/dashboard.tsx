@@ -6,6 +6,15 @@ import { ArrowRight, Bell, CheckCircle2, Clock, LineChart, Link2, TrendingUp, Bo
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
+  head: () => ({ meta: [
+    { title: "Dashboard — MiyaraTrader" },
+    { name: "description", content: "MiyaraTrader account overview and saved connection details." },
+    { property: "og:title", content: "Dashboard — MiyaraTrader" },
+    { property: "og:description", content: "MiyaraTrader account overview and saved connection details." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+    { name: "robots", content: "noindex" },
+  ] }),
   component: DashboardPage,
 });
 

@@ -10,6 +10,15 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/settings")({
+  head: () => ({ meta: [
+    { title: "Settings — MiyaraTrader" },
+    { name: "description", content: "Manage MiyaraTrader account preferences." },
+    { property: "og:title", content: "Settings — MiyaraTrader" },
+    { property: "og:description", content: "Manage MiyaraTrader account preferences." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+    { name: "robots", content: "noindex" },
+  ] }),
   component: SettingsPage,
 });
 
@@ -31,7 +40,7 @@ function SettingsPage() {
   async function save() {
     if (!s) return;
     setSaving(true);
-    const { error } = await supabase.from("user_settings").upsert(s);
+    const { error } = await supabase.from("user_settings").upsert({ ...s, marketing_emails: false });
     setSaving(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Settings saved");
@@ -41,7 +50,7 @@ function SettingsPage() {
 
   return (
     <PageContainer>
-      <PageHeader eyebrow="Preferences" title="Settings" subtitle="Customize your MiyaraTrader experience." />
+      <PageHeader eyebrow="Preferences" title="Settings" subtitle="Account preferences" />
 
       <Card>
         <h2 className="font-display text-lg font-semibold mb-4">Appearance</h2>
@@ -62,9 +71,9 @@ function SettingsPage() {
               <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="en">English</SelectItem>
-                <SelectItem value="si">Sinhala</SelectItem>
-                <SelectItem value="ta">Tamil</SelectItem>
-                <SelectItem value="es">Spanish</SelectItem>
+                <SelectItem value="si" disabled>Sinhala (unavailable)</SelectItem>
+                <SelectItem value="ta" disabled>Tamil (unavailable)</SelectItem>
+                <SelectItem value="es" disabled>Spanish (unavailable)</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -73,9 +82,8 @@ function SettingsPage() {
 
       <Card>
         <h2 className="font-display text-lg font-semibold mb-4">Notifications</h2>
-        <SettingsRow label="Email notifications" desc="Account and platform updates" checked={s.email_notifications} onChange={v => setS({ ...s, email_notifications: v })}/>
-        <SettingsRow label="Push notifications" desc="Browser push alerts" checked={s.push_notifications} onChange={v => setS({ ...s, push_notifications: v })}/>
-        <SettingsRow label="Marketing emails" desc="News, tips, and product announcements" checked={s.marketing_emails} onChange={v => setS({ ...s, marketing_emails: v })}/>
+        <SettingsRow label="Email notifications" desc="Delivery preferences; notification delivery is not enabled" disabled checked={s.email_notifications} onChange={v => setS({ ...s, email_notifications: v })}/>
+        <SettingsRow label="Push notifications" desc="Browser push alerts are not available" disabled checked={s.push_notifications} onChange={v => setS({ ...s, push_notifications: v })}/>
       </Card>
 
       <Card>

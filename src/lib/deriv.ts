@@ -4,11 +4,12 @@
 // set DERIV_APP_ID via VITE_DERIV_APP_ID. Default 1089 is Deriv's public
 // tutorial app_id.
 export const DERIV_APP_ID =
-  (import.meta.env.VITE_DERIV_APP_ID as string | undefined) ?? "1089";
+  (import.meta.env.VITE_DERIV_APP_ID as string | undefined) ?? "";
 
 export const DERIV_OAUTH_URL = "https://oauth.deriv.com/oauth2/authorize";
 
 export function buildDerivAuthUrl(redirectUri: string) {
+  if (!DERIV_APP_ID) throw new Error("Deriv connection is awaiting the MiyaraTrader App ID.");
   const params = new URLSearchParams({
     app_id: DERIV_APP_ID,
     l: "EN",

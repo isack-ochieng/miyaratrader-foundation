@@ -13,8 +13,16 @@ const searchSchema = z.object({ mode: z.enum(["signin", "signup", "reset"]).opti
 
 export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
+  head: () => ({ meta: [
+    { title: "Sign in — MiyaraTrader" },
+    { name: "description", content: "Sign in or register a MiyaraTrader account." },
+    { property: "og:title", content: "Sign in — MiyaraTrader" },
+    { property: "og:description", content: "Sign in or register a MiyaraTrader account." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+    { name: "robots", content: "noindex" },
+  ] }),
   component: AuthPage,
-  head: () => ({ meta: [{ title: "Sign in — MiyaraTrader" }, { name: "description", content: "Sign in or create a MiyaraTrader account." }, { name: "robots", content: "noindex" }] }),
 });
 
 function AuthPage() {
