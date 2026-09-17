@@ -12,6 +12,7 @@ import { TrendingUp, ArrowLeft } from "lucide-react";
 const searchSchema = z.object({ mode: z.enum(["signin", "signup", "reset"]).optional() });
 
 export const Route = createFileRoute("/auth")({
+  ssr: false,
   validateSearch: searchSchema,
   head: () => ({ meta: [
     { title: "Sign in — MiyaraTrader" },
