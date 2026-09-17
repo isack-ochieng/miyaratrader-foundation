@@ -12,9 +12,18 @@ import { TrendingUp, ArrowLeft } from "lucide-react";
 const searchSchema = z.object({ mode: z.enum(["signin", "signup", "reset"]).optional() });
 
 export const Route = createFileRoute("/auth")({
+  ssr: false,
   validateSearch: searchSchema,
+  head: () => ({ meta: [
+    { title: "Sign in — MiyaraTrader" },
+    { name: "description", content: "Sign in or register a MiyaraTrader account." },
+    { property: "og:title", content: "Sign in — MiyaraTrader" },
+    { property: "og:description", content: "Sign in or register a MiyaraTrader account." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+    { name: "robots", content: "noindex" },
+  ] }),
   component: AuthPage,
-  head: () => ({ meta: [{ title: "Sign in — MiyaraTrader" }, { name: "description", content: "Sign in or create a MiyaraTrader account." }, { name: "robots", content: "noindex" }] }),
 });
 
 function AuthPage() {
@@ -76,10 +85,9 @@ function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-hero flex items-center justify-center px-4 py-12 relative overflow-hidden">
-      <div className="absolute inset-0 grid-fade opacity-40" aria-hidden />
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12 relative overflow-hidden">
       <Link to="/" className="absolute top-6 left-6 text-sm text-muted-foreground hover:text-foreground flex items-center gap-2">
-        <ArrowLeft className="h-4 w-4" /> Back
+        <ArrowLeft className="h-4 w-4" /> MiyaraTrader
       </Link>
       <div className="w-full max-w-md relative">
         <div className="text-center mb-8">
@@ -92,10 +100,10 @@ function AuthPage() {
         </div>
         <div className="glass rounded-2xl p-8">
           <h1 className="text-2xl font-display font-bold">
-            {mode === "signin" ? "Welcome back" : mode === "signup" ? "Create your account" : "Reset password"}
+            {mode === "signin" ? "Sign in" : mode === "signup" ? "Create your account" : "Reset password"}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {mode === "signin" ? "Sign in to your trading workspace" : mode === "signup" ? "Start trading in minutes" : "We'll email you a reset link"}
+            {mode === "signin" ? "Sign in to your trading workspace" : mode === "signup" ? "Register a MiyaraTrader account" : "We'll email you a reset link"}
           </p>
 
           {mode !== "reset" && (

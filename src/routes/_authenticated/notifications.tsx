@@ -7,15 +7,20 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/notifications")({
+  head: () => ({ meta: [
+    { title: "Notifications — MiyaraTrader" },
+    { name: "description", content: "MiyaraTrader account notifications." },
+    { property: "og:title", content: "Notifications — MiyaraTrader" },
+    { property: "og:description", content: "MiyaraTrader account notifications." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+    { name: "robots", content: "noindex" },
+  ] }),
   component: NotificationsPage,
 });
 
 interface Notif { id: string; title: string; message: string; type: string; read: boolean; created_at: string }
 
-const defaults: Omit<Notif, "id">[] = [
-  { title: "Welcome to MiyaraTrader", message: "Your account has been created. Connect your Deriv account to get started.", type: "system", read: false, created_at: new Date().toISOString() },
-  { title: "Phase 2 preview", message: "Trading bots, signals, and analytics are coming soon.", type: "news", read: false, created_at: new Date().toISOString() },
-];
 
 function iconFor(type: string) {
   if (type === "news") return Megaphone;
@@ -30,16 +35,9 @@ function NotificationsPage() {
   async function refresh() {
     const { data: u } = await supabase.auth.getUser();
     if (!u.user) return;
-    const { data } = await supabase.from("notifications").select("*").eq("user_id", u.user.id).order("created_at", { ascending: false });
-    if (!data || data.length === 0) {
-      // seed defaults for new users
-      const rows = defaults.map(d => ({ ...d, user_id: u.user!.id }));
-      await supabase.from("notifications").insert(rows);
-      const { data: seeded } = await supabase.from("notifications").select("*").eq("user_id", u.user.id).order("created_at", { ascending: false });
-      setItems((seeded ?? []) as Notif[]);
-    } else {
-      setItems(data as Notif[]);
-    }
+    const { data, error } = await supabase.from("notifications").select("*").eq("user_id", u.user.id).order("created_at", { ascending: false });
+    if (error) { toast.error("Unable to load notifications"); return; }
+    setItems(((data ?? []) as Notif[]).filter(n => n.title !== "Phase 2 preview"));
   }
   useEffect(() => { refresh(); }, []);
 

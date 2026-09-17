@@ -9,6 +9,15 @@ import { toast } from "sonner";
 import { Loader2, User as UserIcon } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/profile")({
+  head: () => ({ meta: [
+    { title: "My account — MiyaraTrader" },
+    { name: "description", content: "Manage your MiyaraTrader profile and password." },
+    { property: "og:title", content: "My account — MiyaraTrader" },
+    { property: "og:description", content: "Manage your MiyaraTrader profile and password." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+    { name: "robots", content: "noindex" },
+  ] }),
   component: ProfilePage,
 });
 
@@ -57,7 +66,7 @@ function ProfilePage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="flex flex-col items-center text-center">
           <div className="h-24 w-24 rounded-full bg-primary/20 text-primary flex items-center justify-center text-3xl font-bold">
-            {p.full_name?.[0]?.toUpperCase() ?? p.email?.[0]?.toUpperCase() ?? <UserIcon className="h-8 w-8"/>}
+            {p.avatar_url?.startsWith("https://") ? <img src={p.avatar_url} alt="Profile" className="h-24 w-24 rounded-full object-cover" /> : (p.full_name?.[0]?.toUpperCase() ?? p.email?.[0]?.toUpperCase() ?? <UserIcon className="h-8 w-8"/>)}
           </div>
           <div className="mt-4 font-semibold">{p.full_name || "Unnamed trader"}</div>
           <div className="text-xs text-muted-foreground mt-1">{p.email}</div>
@@ -81,7 +90,7 @@ function ProfilePage() {
         <h2 className="font-display text-lg font-semibold">Security</h2>
         <p className="text-sm text-muted-foreground mt-1">Update your password.</p>
         <form onSubmit={changePassword} className="mt-4 flex flex-wrap gap-3 items-end">
-          <div className="flex-1 min-w-64"><Label>New password</Label><Input type="password" value={newPassword} onChange={e=>setNewPassword(e.target.value)} className="mt-1.5 h-10"/></div>
+          <div className="flex-1 min-w-0 w-full sm:w-auto"><Label>New password</Label><Input type="password" value={newPassword} onChange={e=>setNewPassword(e.target.value)} className="mt-1.5 h-10"/></div>
           <Button type="submit" variant="outline">Update password</Button>
         </form>
       </Card>

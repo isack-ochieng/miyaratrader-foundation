@@ -8,8 +8,16 @@ import { toast } from "sonner";
 import { TrendingUp } from "lucide-react";
 
 export const Route = createFileRoute("/reset-password")({
+  head: () => ({ meta: [
+    { title: "Reset password — MiyaraTrader" },
+    { name: "description", content: "Reset your MiyaraTrader account password." },
+    { property: "og:title", content: "Reset password — MiyaraTrader" },
+    { property: "og:description", content: "Reset your MiyaraTrader account password." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+    { name: "robots", content: "noindex" },
+  ] }),
   component: ResetPasswordPage,
-  head: () => ({ meta: [{ title: "Reset password — MiyaraTrader" }, { name: "robots", content: "noindex" }] }),
 });
 
 function ResetPasswordPage() {

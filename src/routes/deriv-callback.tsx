@@ -7,8 +7,16 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/deriv-callback")({
+  head: () => ({ meta: [
+    { title: "Deriv connection — MiyaraTrader" },
+    { name: "description", content: "Deriv account connection status." },
+    { property: "og:title", content: "Deriv connection — MiyaraTrader" },
+    { property: "og:description", content: "Deriv account connection status." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+    { name: "robots", content: "noindex" },
+  ] }),
   component: DerivCallback,
-  head: () => ({ meta: [{ title: "Connecting Deriv…" }, { name: "robots", content: "noindex" }] }),
 });
 
 function DerivCallback() {
@@ -21,6 +29,7 @@ function DerivCallback() {
       try {
         const search = window.location.search + window.location.hash.replace(/^#/, "&");
         const accounts = parseDerivCallback(search);
+        window.history.replaceState({}, "", "/deriv-callback");
         if (accounts.length === 0) {
           setStatus("err");
           setMessage("No account data returned from Deriv. Try again or use manual token entry.");
@@ -30,20 +39,9 @@ function DerivCallback() {
         if (!user.user) {
           setStatus("err"); setMessage("You need to be signed in."); return;
         }
-        const rows = accounts.map(a => ({
-          user_id: user.user!.id,
-          account_id: a.account_id,
-          currency: a.currency,
-          token_encrypted: a.token,
-          is_virtual: a.account_id.toUpperCase().startsWith("VR"),
-          status: "connected",
-          last_synced_at: new Date().toISOString(),
-        }));
-        const { error } = await supabase.from("deriv_connections").upsert(rows, { onConflict: "user_id,account_id" });
-        if (error) throw error;
-        toast.success(`Linked ${accounts.length} Deriv ${accounts.length === 1 ? "account" : "accounts"}.`);
-        setStatus("ok");
-        setTimeout(() => navigate({ to: "/dashboard" }), 900);
+        window.history.replaceState({}, "", "/deriv-callback");
+        setStatus("err");
+        setMessage("Deriv connection setup is incomplete. No access tokens have been saved.");
       } catch (e) {
         setStatus("err");
         setMessage(e instanceof Error ? e.message : "Something went wrong.");
