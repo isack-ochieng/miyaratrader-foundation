@@ -7,15 +7,17 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/deriv-callback")({
-  head: () => ({ meta: [
-    { title: "Deriv connection — MiyaraTrader" },
-    { name: "description", content: "Deriv account connection status." },
-    { property: "og:title", content: "Deriv connection — MiyaraTrader" },
-    { property: "og:description", content: "Deriv account connection status." },
-    { property: "og:type", content: "website" },
-    { name: "twitter:card", content: "summary" },
-    { name: "robots", content: "noindex" },
-  ] }),
+  head: () => ({
+    meta: [
+      { title: "Deriv connection — MiyaraTrader" },
+      { name: "description", content: "Deriv account connection status." },
+      { property: "og:title", content: "Deriv connection — MiyaraTrader" },
+      { property: "og:description", content: "Deriv account connection status." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: DerivCallback,
 });
 
@@ -37,7 +39,9 @@ function DerivCallback() {
         }
         const { data: user } = await supabase.auth.getUser();
         if (!user.user) {
-          setStatus("err"); setMessage("You need to be signed in."); return;
+          setStatus("err");
+          setMessage("You need to be signed in.");
+          return;
         }
         window.history.replaceState({}, "", "/deriv-callback");
         setStatus("err");
@@ -52,9 +56,29 @@ function DerivCallback() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-hero px-4">
       <div className="glass rounded-2xl p-10 max-w-md w-full text-center">
-        {status === "loading" && (<><Loader2 className="h-8 w-8 animate-spin text-primary mx-auto"/><div className="mt-4 font-semibold">Linking your Deriv account…</div></>)}
-        {status === "ok" && (<><CheckCircle2 className="h-10 w-10 text-primary mx-auto"/><div className="mt-4 font-display text-xl font-semibold">Connected!</div><div className="text-sm text-muted-foreground mt-1">Taking you to your dashboard…</div></>)}
-        {status === "err" && (<><XCircle className="h-10 w-10 text-destructive mx-auto"/><div className="mt-4 font-display text-xl font-semibold">Connection failed</div><div className="text-sm text-muted-foreground mt-2">{message}</div><Button className="mt-6" onClick={() => navigate({ to: "/connect-deriv" })}>Try again</Button></>)}
+        {status === "loading" && (
+          <>
+            <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+            <div className="mt-4 font-semibold">Linking your Deriv account…</div>
+          </>
+        )}
+        {status === "ok" && (
+          <>
+            <CheckCircle2 className="h-10 w-10 text-primary mx-auto" />
+            <div className="mt-4 font-display text-xl font-semibold">Connected!</div>
+            <div className="text-sm text-muted-foreground mt-1">Taking you to your dashboard…</div>
+          </>
+        )}
+        {status === "err" && (
+          <>
+            <XCircle className="h-10 w-10 text-destructive mx-auto" />
+            <div className="mt-4 font-display text-xl font-semibold">Connection failed</div>
+            <div className="text-sm text-muted-foreground mt-2">{message}</div>
+            <Button className="mt-6" onClick={() => navigate({ to: "/connect-deriv" })}>
+              Try again
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );

@@ -3,8 +3,7 @@
 // For production, register your own app at https://api.deriv.com/dashboard and
 // set DERIV_APP_ID via VITE_DERIV_APP_ID. Default 1089 is Deriv's public
 // tutorial app_id.
-export const DERIV_APP_ID =
-  (import.meta.env.VITE_DERIV_APP_ID as string | undefined) ?? "";
+export const DERIV_APP_ID = (import.meta.env.VITE_DERIV_APP_ID as string | undefined) ?? "";
 
 export const DERIV_OAUTH_URL = "https://oauth.deriv.com/oauth2/authorize";
 
