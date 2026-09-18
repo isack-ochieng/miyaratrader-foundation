@@ -159,18 +159,18 @@ function ConnectDerivPage() {
         </Card>
       )}
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+      <div className="grid items-stretch gap-4 md:grid-cols-2">
+        <Card className="flex h-full flex-col">
           <div className="flex items-center gap-2 text-primary mb-3">
             <ShieldCheck className="h-5 w-5" />{" "}
             <span className="text-xs uppercase tracking-widest">Recommended</span>
           </div>
           <h2 className="text-xl font-display font-semibold">Connect with Deriv</h2>
-          <p className="text-sm text-muted-foreground mt-2">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
             You'll be redirected to Deriv to authorise MiyaraTrader. We never see your password, and
             the access we receive is stored encrypted.
           </p>
-          <ol className="mt-4 text-sm space-y-2 text-muted-foreground">
+          <ol className="mt-4 max-w-2xl space-y-2 text-sm leading-6 text-muted-foreground">
             <li className="flex gap-2">
               <span className="text-primary">1.</span> Click the button below
             </li>
@@ -181,7 +181,7 @@ function ConnectDerivPage() {
               <span className="text-primary">3.</span> You'll be returned to MiyaraTrader
             </li>
           </ol>
-          <Button className="mt-6 h-11 glow-emerald" onClick={startOAuth} disabled={!appId}>
+          <Button className="mt-auto self-start h-11 glow-emerald" onClick={startOAuth} disabled={!appId}>
             Connect with Deriv <ExternalLink className="ml-2 h-4 w-4" />
           </Button>
           {!appId && (
@@ -191,7 +191,7 @@ function ConnectDerivPage() {
           )}
         </Card>
 
-        <Card>
+        <Card className="flex h-full flex-col">
           <div className="flex items-center gap-2 text-muted-foreground mb-3">
             <Info className="h-4 w-4" />{" "}
             <span className="text-xs uppercase tracking-widest">Manual entry</span>
