@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DerivCallbackView } from "@/components/app/DerivCallbackView";
 
-export const Route = createFileRoute("/deriv-callback")({
+export const Route = createFileRoute("/auth_/deriv/callback")({
   ssr: false,
   head: () => ({
     meta: [
@@ -14,5 +14,5 @@ export const Route = createFileRoute("/deriv-callback")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: () => <DerivCallbackView cleanPath="/deriv-callback" />,
+  component: () => <DerivCallbackView cleanPath="/auth/deriv/callback" />,
 });

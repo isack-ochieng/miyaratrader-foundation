@@ -1,16 +1,12 @@
-// Deriv OAuth helpers.
-// Deriv's OAuth uses app_id + a pre-registered redirect URL on the app.
-// For production, register your own app at https://api.deriv.com/dashboard and
-// set DERIV_APP_ID via VITE_DERIV_APP_ID. Default 1089 is Deriv's public
-// tutorial app_id.
-export const DERIV_APP_ID = (import.meta.env.VITE_DERIV_APP_ID as string | undefined) ?? "";
-
+// Deriv OAuth helpers (browser-safe).
+// The app id and the approved redirect URL are stored server-side and fetched
+// through the getDerivConfig server function.
 export const DERIV_OAUTH_URL = "https://oauth.deriv.com/oauth2/authorize";
 
-export function buildDerivAuthUrl(redirectUri: string) {
-  if (!DERIV_APP_ID) throw new Error("Deriv connection is awaiting the MiyaraTrader App ID.");
+export function buildDerivAuthUrl(appId: string, redirectUri: string) {
+  if (!appId) throw new Error("Deriv connection is awaiting the MiyaraTrader App ID.");
   const params = new URLSearchParams({
-    app_id: DERIV_APP_ID,
+    app_id: appId,
     l: "EN",
     brand: "deriv",
     redirect_uri: redirectUri,

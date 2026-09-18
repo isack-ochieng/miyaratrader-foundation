@@ -1,20 +1,13 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageContainer, PageHeader, Card } from "@/components/app/AppUI";
-import { buildDerivAuthUrl, DERIV_APP_ID } from "@/lib/deriv";
+import { buildDerivAuthUrl } from "@/lib/deriv";
+import { getDerivConfig, saveDerivAccounts } from "@/lib/deriv.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  ExternalLink,
-  ShieldCheck,
-  CheckCircle2,
-  XCircle,
-  Info,
-  Trash2,
-  Loader2,
-} from "lucide-react";
+import { ExternalLink, ShieldCheck, CheckCircle2, XCircle, Info, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/connect-deriv")({
@@ -35,10 +28,10 @@ export const Route = createFileRoute("/_authenticated/connect-deriv")({
 interface Conn {
   id: string;
   account_id: string;
-  currency: string;
-  balance: number;
+  currency: string | null;
+  balance: number | null;
   status: string;
-  is_virtual: boolean;
+  is_virtual: boolean | null;
   last_synced_at: string | null;
 }
 
@@ -49,7 +42,8 @@ function ConnectDerivPage() {
   const [manualAccount, setManualAccount] = useState("");
   const [manualCurrency, setManualCurrency] = useState("USD");
   const [submitting, setSubmitting] = useState(false);
-  const navigate = useNavigate();
+  const [appId, setAppId] = useState("");
+  const [redirectUrl, setRedirectUrl] = useState("");
 
   async function refresh() {
     const { data: user } = await supabase.auth.getUser();
@@ -62,14 +56,21 @@ function ConnectDerivPage() {
     setConnections((data ?? []) as Conn[]);
     setLoading(false);
   }
+
   useEffect(() => {
     refresh();
+    getDerivConfig()
+      .then((cfg) => {
+        setAppId(cfg.appId);
+        setRedirectUrl(cfg.redirectUrl);
+      })
+      .catch(() => undefined);
   }, []);
 
   function startOAuth() {
-    const redirect = `${window.location.origin}/deriv-callback`;
+    const redirect = redirectUrl || `${window.location.origin}/auth/deriv/callback`;
     try {
-      window.location.href = buildDerivAuthUrl(redirect);
+      window.location.href = buildDerivAuthUrl(appId, redirect);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Connection unavailable");
     }
@@ -77,8 +78,24 @@ function ConnectDerivPage() {
 
   async function saveManual(e: React.FormEvent) {
     e.preventDefault();
-    toast.error("Token connection is not configured.");
-    return;
+    setSubmitting(true);
+    try {
+      await saveDerivAccounts({
+        data: {
+          accounts: [
+            { account_id: manualAccount, token: manualToken, currency: manualCurrency },
+          ],
+        },
+      });
+      toast.success("Deriv account saved securely");
+      setManualToken("");
+      setManualAccount("");
+      refresh();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not save this account");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   async function disconnect(id: string) {
@@ -118,14 +135,14 @@ function ConnectDerivPage() {
                       </span>
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {c.currency} · {c.balance?.toFixed?.(2) ?? "—"} · last verified{" "}
+                      {c.currency} · {c.balance?.toFixed?.(2) ?? "—"} · linked{" "}
                       {c.last_synced_at ? new Date(c.last_synced_at).toLocaleString() : "—"}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs flex items-center gap-1 text-primary">
-                    <CheckCircle2 className="h-4 w-4" /> Not verified
+                    <CheckCircle2 className="h-4 w-4" /> Linked
                   </span>
                   <Button
                     variant="ghost"
@@ -148,10 +165,10 @@ function ConnectDerivPage() {
             <ShieldCheck className="h-5 w-5" />{" "}
             <span className="text-xs uppercase tracking-widest">Recommended</span>
           </div>
-          <h2 className="text-xl font-display font-semibold">Connect with Deriv OAuth</h2>
+          <h2 className="text-xl font-display font-semibold">Connect with Deriv</h2>
           <p className="text-sm text-muted-foreground mt-2">
-            You'll be redirected to Deriv to authorize MiyaraTrader. We never see your password.
-            After approving, we'll return you here with your accounts linked.
+            You'll be redirected to Deriv to authorise MiyaraTrader. We never see your password, and
+            the access we receive is stored encrypted.
           </p>
           <ol className="mt-4 text-sm space-y-2 text-muted-foreground">
             <li className="flex gap-2">
@@ -164,12 +181,12 @@ function ConnectDerivPage() {
               <span className="text-primary">3.</span> You'll be returned to MiyaraTrader
             </li>
           </ol>
-          <Button className="mt-6 h-11 glow-emerald" onClick={startOAuth} disabled={!DERIV_APP_ID}>
+          <Button className="mt-6 h-11 glow-emerald" onClick={startOAuth} disabled={!appId}>
             Connect with Deriv <ExternalLink className="ml-2 h-4 w-4" />
           </Button>
-          {!DERIV_APP_ID && (
+          {!appId && (
             <p className="text-xs text-muted-foreground mt-3">
-              OAuth setup is pending the MiyaraTrader Deriv App ID.
+              Deriv sign-in is unavailable until the MiyaraTrader App ID is configured.
             </p>
           )}
         </Card>
@@ -181,8 +198,8 @@ function ConnectDerivPage() {
           </div>
           <h2 className="text-xl font-display font-semibold">Enter an API token</h2>
           <p className="text-sm text-muted-foreground mt-2">
-            Token entry is unavailable until secure token storage and account verification are
-            configured.
+            Paste a Deriv API token to link an account. Tokens are encrypted before they are stored
+            and are never sent back to your browser.
           </p>
           <form onSubmit={saveManual} className="mt-4 space-y-3">
             <div>
@@ -216,9 +233,8 @@ function ConnectDerivPage() {
                 />
               </div>
             </div>
-            <Button type="submit" variant="outline" className="w-full h-10" disabled>
-              {submitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Token connection
-              unavailable
+            <Button type="submit" variant="outline" className="w-full h-10" disabled={submitting}>
+              {submitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Save account
             </Button>
           </form>
         </Card>
@@ -233,7 +249,7 @@ function ConnectDerivPage() {
       )}
 
       <div className="text-xs text-muted-foreground text-center">
-        Full live balance sync, positions, and trade streaming arrive in Phase 2.
+        Live balance sync, positions, and trade streaming arrive in Phase 2.
       </div>
     </PageContainer>
   );
