@@ -42,6 +42,8 @@ function ConnectDerivPage() {
   const [manualAccount, setManualAccount] = useState("");
   const [manualCurrency, setManualCurrency] = useState("USD");
   const [submitting, setSubmitting] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState(false);
+  const [disconnectingId, setDisconnectingId] = useState<string | null>(null);
   const [appId, setAppId] = useState("");
   const [redirectUrl, setRedirectUrl] = useState("");
 
@@ -68,10 +70,12 @@ function ConnectDerivPage() {
   }, []);
 
   function startOAuth() {
+    setOauthLoading(true);
     const redirect = redirectUrl || `${window.location.origin}/auth/deriv/callback`;
     try {
       window.location.href = buildDerivAuthUrl(appId, redirect);
     } catch (error) {
+      setOauthLoading(false);
       toast.error(error instanceof Error ? error.message : "Connection unavailable");
     }
   }
@@ -99,13 +103,16 @@ function ConnectDerivPage() {
   }
 
   async function disconnect(id: string) {
+    setDisconnectingId(id);
     const { error } = await supabase.from("deriv_connections").delete().eq("id", id);
     if (error) {
+      setDisconnectingId(null);
       toast.error(error.message);
       return;
     }
     toast.success("Disconnected");
-    refresh();
+    await refresh();
+    setDisconnectingId(null);
   }
 
   return (
@@ -149,8 +156,9 @@ function ConnectDerivPage() {
                     size="sm"
                     aria-label={`Disconnect ${c.account_id}`}
                     onClick={() => disconnect(c.id)}
+                    disabled={disconnectingId !== null}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    {disconnectingId === c.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                   </Button>
                 </div>
               </div>
@@ -181,8 +189,8 @@ function ConnectDerivPage() {
               <span className="text-primary">3.</span> You'll be returned to MiyaraTrader
             </li>
           </ol>
-          <Button className="mt-auto self-start h-11 glow-emerald" onClick={startOAuth} disabled={!appId}>
-            Connect with Deriv <ExternalLink className="ml-2 h-4 w-4" />
+          <Button className="mt-auto self-start h-11 glow-emerald" onClick={startOAuth} disabled={!appId || oauthLoading}>
+            {oauthLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ExternalLink className="mr-2 h-4 w-4" />} {oauthLoading ? "Connecting…" : "Connect with Deriv"}
           </Button>
           {!appId && (
             <p className="text-xs text-muted-foreground mt-3">
