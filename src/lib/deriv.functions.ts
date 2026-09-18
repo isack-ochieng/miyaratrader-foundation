@@ -7,10 +7,17 @@ export interface DerivConfig {
 }
 
 /** Public: the Deriv app id and approved redirect URL are not secrets. */
+const PUBLIC_DERIV_APP_ID = "34r0CLmK19IYUzRlmxcCo";
+const PUBLIC_DERIV_REDIRECT_URL = "https://miyaratrader.pages.dev/auth/deriv/callback";
+
 export const getDerivConfig = createServerFn({ method: "GET" }).handler(
   async (): Promise<DerivConfig> => ({
-    appId: process.env["DERIV_APP_ID"] ?? "",
-    redirectUrl: process.env["DERIV_REDIRECT_URL"] ?? "",
+    // These values are public OAuth configuration. Environment variables may override
+    // them when the backend runtime provides them, but the deployed app must work
+    // without requiring Cloudflare to store the public App ID.
+    appId: process.env["DERIV_APP_ID"] ?? PUBLIC_DERIV_APP_ID,
+    redirectUrl:
+      process.env["DERIV_REDIRECT_URL"] ?? PUBLIC_DERIV_REDIRECT_URL,
   }),
 );
 
