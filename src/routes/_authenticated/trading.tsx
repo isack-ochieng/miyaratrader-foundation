@@ -1,29 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageContainer, PageHeader, ComingSoon, Card } from "@/components/app/AppUI";
-import {
-  LineChart,
-  Activity,
-  Wallet2,
-  History,
-  Signal,
-  Bot,
-  Wrench,
-  TrendingUp,
-} from "lucide-react";
+import { Activity, Wallet2, History, Signal, Bot, Wrench, TrendingUp } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/trading")({
   head: () => ({
     meta: [
       { title: "Trading workspace — MiyaraTrader" },
-      {
-        name: "description",
-        content: "MiyaraTrader trading workspace. Trading execution is not available.",
-      },
+      { name: "description", content: "MiyaraTrader trading workspace. Trading execution is not available." },
       { property: "og:title", content: "Trading workspace — MiyaraTrader" },
-      {
-        property: "og:description",
-        content: "MiyaraTrader trading workspace. Trading execution is not available.",
-      },
+      { property: "og:description", content: "MiyaraTrader trading workspace. Trading execution is not available." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
@@ -35,84 +20,40 @@ export const Route = createFileRoute("/_authenticated/trading")({
 function TradingPage() {
   return (
     <PageContainer>
-      <PageHeader
-        eyebrow="Trading workspace"
-        title="Trading"
-        subtitle="Trading execution is not available in this release."
-      />
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="md:col-span-2 min-h-[380px] relative overflow-hidden">
-          <div className="flex items-center justify-between">
+      <PageHeader eyebrow="Trading workspace" title="Trading" subtitle="Your future trading desk, prepared for Phase 2." />
+
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
+        <Card className="min-h-[380px] overflow-hidden">
+          <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <div className="text-xs text-muted-foreground">Trading chart</div>
-              <div className="text-2xl font-semibold mt-1">—</div>
+              <div className="mt-1 text-2xl font-semibold">Market chart</div>
             </div>
-            <div className="text-[10px] font-semibold uppercase tracking-widest rounded-full bg-primary/20 text-primary px-2 py-1">
-              Coming in Phase 2
-            </div>
+            <StatusBadge>Coming in Phase 2</StatusBadge>
           </div>
-          <FakeChart />
-          <div className="mt-3 text-xs text-muted-foreground">
-            Illustrative chart · No live market data.
-          </div>
+          <div className="mt-3 w-full overflow-hidden rounded-xl border border-border/50 bg-background/30"><FakeChart /></div>
+          <p className="mt-3 max-w-2xl text-xs leading-5 text-muted-foreground">Illustrative chart — no live market data is being displayed in Phase 1.</p>
         </Card>
-        <ComingSoon
-          title="Market Watch"
-          description="Curated instruments and live quotes at a glance."
-          icon={TrendingUp}
-        />
+        <ComingSoon title="Market Watch" description="Curated instruments and live quotes at a glance." icon={TrendingUp} />
       </div>
+
       <div className="grid gap-4 md:grid-cols-3">
-        <ComingSoon
-          title="Trade Panel"
-          description="Fast one-click order entry with risk controls."
-          icon={Activity}
-        />
-        <ComingSoon
-          title="Open Positions"
-          description="Manage every open position across accounts."
-          icon={Wallet2}
-        />
-        <ComingSoon
-          title="Trade History"
-          description="Complete audit trail of your trading activity."
-          icon={History}
-        />
-      </div>
-      <div className="grid gap-4 md:grid-cols-3">
-        <ComingSoon
-          title="Signals"
-          description="Curated signal streams from the MiyaraTrader network."
-          icon={Signal}
-        />
-        <ComingSoon
-          title="Bot Trading"
-          description="Deploy strategies that run 24/7 on your behalf."
-          icon={Bot}
-        />
-        <ComingSoon
-          title="Strategy Builder"
-          description="Visually design and back-test your own strategies."
-          icon={Wrench}
-        />
+        <ComingSoon title="Trade Panel" description="Fast order entry with risk controls." icon={Activity} />
+        <ComingSoon title="Open Positions" description="Manage open positions across connected accounts." icon={Wallet2} />
+        <ComingSoon title="Trade History" description="Complete audit trail of trading activity." icon={History} />
+        <ComingSoon title="Signals" description="Curated signal streams from the MiyaraTrader network." icon={Signal} />
+        <ComingSoon title="Bot Trading" description="Deploy strategies that run 24/7 on your behalf." icon={Bot} />
+        <ComingSoon title="Strategy Builder" description="Visually design and back-test strategies." icon={Wrench} />
       </div>
     </PageContainer>
   );
 }
 
+function StatusBadge({ children }: { children: React.ReactNode }) {
+  return <span className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-primary">{children}</span>;
+}
+
 function FakeChart() {
-  const pts =
-    "0,140 40,130 80,120 120,135 160,110 200,95 240,105 280,80 320,88 360,60 400,70 440,45 480,55 520,30";
-  return (
-    <svg viewBox="0 0 520 200" className="mt-4 w-full h-56">
-      <defs>
-        <linearGradient id="tg" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.5" />
-          <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <polyline points={pts} fill="none" stroke="var(--primary)" strokeWidth="2" />
-      <polygon points={`${pts} 520,200 0,200`} fill="url(#tg)" />
-    </svg>
-  );
+  const pts = "0,140 40,130 80,120 120,135 160,110 200,95 240,105 280,80 320,88 360,60 400,70 440,45 480,55 520,30";
+  return <svg viewBox="0 0 520 200" className="h-56 w-full" role="img" aria-label="Illustrative trading chart placeholder"><defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--primary)" stopOpacity="0.5" /><stop offset="100%" stopColor="var(--primary)" stopOpacity="0" /></linearGradient></defs><polyline points={pts} fill="none" stroke="var(--primary)" strokeWidth="2" /><polygon points={`${pts} 520,200 0,200`} fill="url(#tg)" /></svg>;
 }
