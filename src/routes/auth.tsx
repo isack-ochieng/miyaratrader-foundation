@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { TrendingUp, ArrowLeft } from "lucide-react";
+import { TrendingUp, ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
 
 const searchSchema = z.object({ mode: z.enum(["signin", "signup", "reset"]).optional() });
 
@@ -34,6 +34,7 @@ function AuthPage() {
   const [mode, setMode] = useState<"signin" | "signup" | "reset">(search.mode ?? "signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -137,7 +138,7 @@ function AuthPage() {
                 onClick={handleGoogle}
                 disabled={loading}
               >
-                <GoogleIcon /> Continue with Google
+                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />} Continue with Google
               </Button>
               <div className="relative my-5">
                 <span className="absolute inset-x-0 top-1/2 h-px bg-border" />
@@ -186,21 +187,31 @@ function AuthPage() {
                     </button>
                   )}
                 </div>
-                <Input
-                  id="pw"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                  className="h-11 mt-1.5"
-                />
+                <div className="relative mt-1.5">
+                  <Input
+                    id="pw"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    className="h-11 pr-11"
+                  />
+                  <button
+                    type="button"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    onClick={() => setShowPassword((visible) => !visible)}
+                    className="absolute right-0 top-0 flex h-11 w-11 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
             )}
             <Button type="submit" className="w-full h-11 mt-2" disabled={loading}>
-              {loading
-                ? "Please wait…"
-                : mode === "signin"
+              {loading ? (
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait…</>
+              ) : mode === "signin"
                   ? "Sign in"
                   : mode === "signup"
                     ? "Create account"
